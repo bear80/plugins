@@ -42,10 +42,11 @@ Enable the plugin in plugin.yaml, type in the inverters IP address and configure
 
 ```yaml
 Kostalmodbus:
-    plugin_name: kostalmodbus
-    inverter_ip: 'XXX.XXX.XXX.XXX'
-    modbus_port: '1502'
-    update_cycle: '20'
+    class_name: Kostalmodbus
+    class_path: plugins.kostalmodbus
+    inverter_ip: XXX.XXX.XXX.XXX
+    modbus_port: 1502
+    update_cycle: 20
 ```
 
 ### 2) /smarthome/items/kostal.yaml

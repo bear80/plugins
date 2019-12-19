@@ -12,10 +12,9 @@ from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.constants import Endian
 
 class Inverter:
-    def __init__(self, ip, port, ksem_ip):
+    def __init__(self, ip, port):
         self.__init_registers()
         self.client = ModbusTcpClient(ip, port=port)
-        self.clientKSEM = ModbusTcpClient(ksem_ip, port='502')
 
     def __init_registers(self):
         self.registers = []
@@ -26,7 +25,6 @@ class Inverter:
     def get_data(self):
         try:
             self.client.connect()
-            self.clientKSEM.connect()
             for i in self.registers:
                     if i.type == "Float":
                         i.value = self.__read_float(i.adrDec)
@@ -36,15 +34,12 @@ class Inverter:
                         i.value = self.__read_u16_2(i.adrDec)
                     elif i.type == "U32":
                         i.value = self.__read_u32(i.adrDec)
-                    elif i.type == "U32ksem":
-                        i.value = self.__read_u32KSEM(i.adrDec)
                     elif i.type == "S16":
                         i.value = self.__read_s16(i.adrDec)
         except Exception as exc:
             print("Error getting Data from Kostal Inverter :", exc)
 
         self.client.close()
-        self.clientKSEM.close()
         return self.registers
 
     def __read_float(self, adr_dec):
@@ -67,11 +62,6 @@ class Inverter:
         u32_value = BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,wordorder=Endian.Little)
         return u32_value.decode_32bit_uint()
 
-    def __read_u32KSEM(self, adr_dec):
-        result = self.clientKSEM.read_holding_registers(adr_dec, 2, unit=71)
-        u32_value = BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,wordorder=Endian.Little)
-        return u32_value.decode_32bit_uint()
-
     def __read_s16(self, adr_dec):
         result = self.client.read_holding_registers(adr_dec, 1, unit=71)
         s16_value = BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,wordorder=Endian.Little)
@@ -81,7 +71,7 @@ class Inverter:
                        158,160,162,164,166,168,170,172,174,178,190,194,200,202,208,210,214,216,218,220,222,224,226,228,
                        230,232,234,236,238,240,242,244,246,248,250,252,254,256,258,260,266,268,270,276,278,280,286,320,
                        322,324,326,512,514,515,525,529,531,575,
-                       577,582,586,588,0,2]
+                       577,582,586,588]
 
     __descriptionRow = ['Number of bidirectional converter',
                 'Number of AC phases', 'Number of PV strings','Hardware-Version','Power-ID','Inverter state2','Total DC power W','State of energy manager3',
@@ -105,12 +95,12 @@ class Inverter:
                 'Total yield','Daily yield','Yearly yield','Monthly yield','Battery gross capacity','Battery actual SOC',
                 'Firmware Maincontroller (MC)','Battery Model ID','Work Capacity','Inverter Max Power',
                 'Inverter Generation Power (actual)','Generation Energy','Actual battery charge/discharge power',
-                'Battery Firmware','Battery Type6','KSEM Bezug','KSEM Einspeisen']
+                'Battery Firmware','Battery Type6']
 
     __unitRow = ['-','-','-','-','-','-','W','-','W','W','Wh','Wh','Wh','W','Wh','Ohm','%','%','Seconds',
                 'cos','Hz','A','W','V','A','W','V','A','W','V','W','Var','VA','A','-','A','-','-','%','°C','V','cos',
                 'Hz','A','W','Var','VA','V','A','W','Var','VA','V','A','W','Var','VA','V','W','Var','VA','A','W','V',
-                'A','W','V','A','W','V','Wh','Wh','Wh','Wh','Ah','%','-','-','Wh','W','W','Wh','W','-','-','Wh','Wh']
+                'A','W','V','A','W','V','Wh','Wh','Wh','Wh','Ah','%','-','-','Wh','W','W','Wh','W','-','-']
 
     __typeRow = ['U16','U16','U16','U16_2','U16_2','U16_2','Float','U32','Float','Float',
                'Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float',
@@ -118,7 +108,7 @@ class Inverter:
                'Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float',
                'Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float',
                'Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','Float','U32',
-                 'U16','U32','U32','U32','U16','S16','U32','S16','U32','U16','U32ksem','U32ksem']
+                 'U16','U32','U32','U32','U16','S16','U32','S16','U32','U16']
 
 
 class Register:

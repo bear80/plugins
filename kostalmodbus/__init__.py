@@ -33,7 +33,7 @@ class Kostalmodbus(SmartPlugin):
     _items = []
 
     def __init__(self, sh, *args, **kwargs):
-        self.inverter = Inverter(self.get_parameter_value("inverter_ip"),self.get_parameter_value("modbus_port"),self.get_parameter_value("ksem_ip"))
+        self.inverter = Inverter(self.get_parameter_value("inverter_ip"),self.get_parameter_value("modbus_port"))
         self._cycle = int(self.get_parameter_value("update_cycle"))
         return
 
@@ -58,4 +58,4 @@ class Kostalmodbus(SmartPlugin):
             for i in range (0,len(inverter_data)):
                 s = 'kostal_'+str(inverter_data[i].adrDec)
                 if self.has_iattr(item.conf, s):
-                    item(self.inverter.registers[i].value)
+                    item(self.inverter.registers[i].value, 'KostalModbus')
