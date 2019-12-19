@@ -282,7 +282,6 @@ class Luxtronic2(LuxBase):
 
     def _decode(self, identifier, value):
         if identifier == 119:
-            self.logger.debug("Identifier 119 has value {0}".format(value))
             if value == 0:
                 return 'Heizbetrieb'
             if value == 1:
@@ -311,8 +310,6 @@ class Luxtronic2(LuxBase):
                 return 'Heizen Ext.'
             if value == 14:
                 return 'Brauchwasser Ext.'
-            if value == 15:
-                return 'ZWE Notbetrieb'
             if value == 16:
                 return 'Durchflussueberwachung'
             if value == 17:
